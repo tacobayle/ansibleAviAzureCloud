@@ -1,0 +1,20 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+
+
+  vars_files:
+    - "vars/params.yml"
+    # - "vars/creds.json"
+    # - "vars/azureDatas.yml"
+
+
+  tasks:
+
+
+    - name: Debug
+      debug:
+        msg: "{{ avi_cloud }}"
+      tags:
+        - debug

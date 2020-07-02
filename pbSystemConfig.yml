@@ -1,0 +1,46 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+
+
+  vars_files:
+    - "vars/params.yml"
+    - "vars/creds.json"
+
+
+  roles:
+    - role: "avinetworks.avisdk"
+
+  tasks:
+
+    - name: Create BackupConfiguration object
+      avi_backupconfiguration:
+        avi_credentials: "{{ avi_credentials }}"
+        api_version: "{{ avi_credentials.api_version }}"
+        state: present
+        backup_passphrase: "{{ avi_credentials.password }}"
+        name: Backup-Configuration
+        save_local: true
+      tags:
+        - system
+
+    - name: Configure Avi System parameters
+      avi_systemconfiguration:
+        avi_credentials: "{{ avi_credentials }}"
+        api_version: "{{ avi_credentials.api_version }}"
+        #avi_api_update_method: patch
+        #avi_api_patch_op: replace
+        global_tenant_config: "{{ avi_systemconfiguration.global_tenant_config }}"
+        dns_configuration: "{{ avi_systemconfiguration.dns_configuration }}"
+        ntp_configuration: "{{ avi_systemconfiguration.ntp_configuration }}"
+        email_configuration: "{{ avi_systemconfiguration.email_configuration }}"
+        welcome_workflow_complete: "{{ avi_systemconfiguration.welcome_workflow_complete }}"
+        # global_tenant_config:
+        #   se_in_provider_context: "{{ systemconfiguration.global_tenant_config.se_in_provider_context }}"
+        #   tenant_access_to_provider_se: "{{ systemconfiguration.global_tenant_config.tenant_access_to_provider_se }}"
+        #   tenant_vrf: "{{ systemconfiguration.global_tenant_config.tenant_vrf }}"
+        # ntp_configuration:
+        #   ntp_servers: "{{ systemconfiguration.ntp_configuration.ntp_servers }}"
+        # dns_configuration: "{{ systemconfiguration.dns_configuration }}"
+      when: avi_systemconfiguration is defined
