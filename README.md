@@ -148,4 +148,6 @@ virtualservice:
 ## Run the playbook:
 ansible-playbook main.yml
 
-## Improvement:
+## Improvement to be done:
+- scale set
+- az enhancement
