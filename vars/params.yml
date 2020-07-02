@@ -46,22 +46,6 @@ avi_cloud:
         virtual_network_id: "/subscriptions/{{ azure.subscriptionId }}/resourceGroups/rg-avi/providers/Microsoft.Network/virtualNetworks/vnet-avi"
     use_standard_alb: false
 
-# avi_cloud:
-#   name: cloudAzure
-#   tenant_ref: admin
-#   vtype: CLOUD_AZURE
-#   resource_group: rg-avi
-#   azure_configuration:
-#     use_managed_disks: true
-#     use_enhanced_ha: false
-#     cloud_credentials_ref: user-azure
-#     use_azure_dns: true
-#     location: westeurope
-#     network_info:
-#       - se_network_id: subnet1
-#         virtual_network_id: "/subscriptions/{{ azure.subscriptionId }}/resourceGroups/rg-avi/providers/Microsoft.Network/virtualNetworks/vnet-avi"
-#     use_standard_alb: false
-
 avi_healthmonitor:
   - name: hm1
     # tenant_ref: team1
