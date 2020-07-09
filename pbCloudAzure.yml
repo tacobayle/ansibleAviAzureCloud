@@ -32,20 +32,20 @@
       avi_cloud:
         avi_credentials: "{{ avi_credentials }}"
         api_version: "{{ avi_credentials.api_version }}"
-        vtype: "{{ cloud.vtype }}"
+        vtype: "{{ avi_cloud.vtype }}"
         license_tier: ENTERPRISE_18
-        tenant_ref: /api/tenant/?name={{ cloud.tenant_ref }}
+        tenant_ref: /api/tenant/?name={{ avi_cloud.tenant_ref }}
         azure_configuration:
-          use_managed_disks: "{{ cloud.azure_configuration.use_managed_disks }}"
-          resource_group: "{{ cloud.resource_group }}"
-          use_enhanced_ha: "{{ cloud.azure_configuration.use_enhanced_ha }}"
-          cloud_credentials_ref: /api/cloudconnectoruser/?name={{ cloud.azure_configuration.cloud_credentials_ref }}
-          use_azure_dns: "{{ cloud.azure_configuration.use_azure_dns }}"
-          location: "{{ cloud.azure_configuration.location }}"
-          network_info: "{{ cloud.azure_configuration.network_info }}"
+          use_managed_disks: "{{ avi_cloud.azure_configuration.use_managed_disks }}"
+          resource_group: "{{ avi_cloud.resource_group }}"
+          use_enhanced_ha: "{{ avi_cloud.azure_configuration.use_enhanced_ha }}"
+          cloud_credentials_ref: /api/cloudconnectoruser/?name={{ avi_cloud.azure_configuration.cloud_credentials_ref }}
+          use_azure_dns: "{{ avi_cloud.azure_configuration.use_azure_dns }}"
+          location: "{{ avi_cloud.azure_configuration.location }}"
+          network_info: "{{ avi_cloud.azure_configuration.network_info }}"
           subscription_id: "{{ azure.subscriptionId }}"
-          use_standard_alb: "{{ cloud.azure_configuration.use_standard_alb }}"
-        name: "{{ cloud.name }}"
+          use_standard_alb: "{{ avi_cloud.azure_configuration.use_standard_alb }}"
+        name: "{{ avi_cloud.name }}"
       register: aviCloudOutput
 
     - set_fact:

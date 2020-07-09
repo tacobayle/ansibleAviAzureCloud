@@ -21,12 +21,6 @@ avi_systemconfiguration:
     from_email: test@avicontroller.net
     smtp_type: SMTP_LOCAL_HOST
 
-serviceEngineGroup:
-  - name: Default-Group
-    ha_mode: HA_MODE_SHARED
-    min_scaleout_per_vs: 1
-    buffer_se: 0
-
 cloudconnectoruser:
   name: user-azure
 
@@ -45,6 +39,16 @@ avi_cloud:
       - se_network_id: subnet1
         virtual_network_id: "/subscriptions/{{ azure.subscriptionId }}/resourceGroups/rg-avi/providers/Microsoft.Network/virtualNetworks/vnet-avi"
     use_standard_alb: false
+
+serviceEngineGroup:
+  - name: Default-Group
+    ha_mode: HA_MODE_SHARED
+    min_scaleout_per_vs: 1
+    buffer_se: 0
+  - name: seGroupGslb
+    ha_mode: HA_MODE_SHARED
+    min_scaleout_per_vs: 1
+    buffer_se: 0
 
 avi_healthmonitor:
   - name: hm1
@@ -74,20 +78,38 @@ avi_pool:
     external_autoscale_groups: false
 
 virtualservice:
-  - name: vs1
-    # tenant_ref: team1
-    port: 443
-    enable_ssl: true
-    pool_ref: pool1
-    vip:
-    - subnet:
-      ipam_network_subnet:
-        subnet_uuid: subnet3
-        subnet:
-          mask: 24
-          ip_addr:
-            type: V4
-            addr: 172.16.3.0
-      avi_allocated_fip: true
-      auto_allocate_ip: true
-      auto_allocate_floating_ip: true
+  http:
+    - name: vs1
+      # tenant_ref: team1
+      services:
+        - port: 443
+          enable_ssl: true
+      pool_ref: pool1
+      vip:
+      - subnet:
+        ipam_network_subnet:
+          subnet_uuid: subnet3
+          subnet:
+            mask: 24
+            ip_addr:
+              type: V4
+              addr: 172.16.3.0
+        avi_allocated_fip: true
+        auto_allocate_ip: true
+        auto_allocate_floating_ip: true
+  dns:
+    - name: dnsGslb
+      services:
+        - port: 53
+      vip:
+      - subnet:
+        ipam_network_subnet:
+          subnet_uuid: subnet3
+          subnet:
+            mask: 24
+            ip_addr:
+              type: V4
+              addr: 172.16.3.0
+        avi_allocated_fip: true
+        auto_allocate_ip: true
+        auto_allocate_floating_ip: true

@@ -60,7 +60,7 @@
         label: "{{ item.name }}"
       when: item.servers
 
-    - name: Create Virtualservice
+    - name: Create Virtualservice (http and https)
       avi_virtualservice:
         avi_credentials: "{{ avi_credentials }}"
         api_version: "{{ avi_credentials.api_version }}"
@@ -72,14 +72,35 @@
         tenant: "{{ item.tenant_ref | default('admin') }}"
         ssl_profile_ref: "/api/sslprofile/?name={{ item.ssl_profile_ref | default('System-Standard') }}"
         ssl_key_and_certificate_refs: "/api/sslkeyandcertificate/?name={{ item.ssl_key_and_certificate_refs | default('System-Default-Cert') }}"
-        services:
-          - port: "{{ item.port }}"
-            enable_ssl: "{{ item.enable_ssl }}"
+        services: "{{ item.services }}"
         pool_ref: "/api/pool?name={{ item.pool_ref }}"
         vip: "{{ item.vip }}"
-      loop: "{{ virtualservice }}"
+      loop: "{{ virtualservice.http }}"
       loop_control:
         label: "{{ item.name }}"
+      tags:
+        - vs
+
+    - name: Create DNS Virtualservice
+      avi_virtualservice:
+        avi_credentials: "{{ avi_credentials }}"
+        api_version: "{{ avi_credentials.api_version }}"
+        avi_api_update_method: patch
+        avi_api_patch_op: add
+        name: "{{ item.name }}"
+        application_profile_ref: "/api/applicationprofile/?name={{ item.application_profile_ref | default('System-DNS') }}"
+        network_profile_ref: "/api/networkprofile/?name={{ item.network_profile_ref | default('System-UDP-Per-Pkt') }}"
+        cloud_ref: "/api/cloud/?name={{ avi_cloud.name }}"
+        tenant_ref: "/api/tenant?name={{ item.tenant_ref | default('admin') }}"
+        tenant: "{{ item.tenant_ref | default('admin') }}"
+        se_group_ref: "/api/serviceenginegroup?name={{ serviceEngineGroup.1.name | default('Default-Group') }}"
+        services: "{{ item.services }}"
+        vip: "{{ item.vip }}"
+      loop: "{{ virtualservice.dns }}"
+      loop_control:
+        label: "{{ item.name }}"
+      tags:
+        - dns
 
     - name: Wait for the each VS to be ready
       avi_api_session:
@@ -93,7 +114,24 @@
       until: statusVs.obj.results.0.runtime.oper_status.state == "OPER_UP"
       retries: 120
       delay: 10
-      loop: "{{ virtualservice }}"
+      loop: "{{ virtualservice.http }}"
       loop_control:
         label: "{{ item.name }}"
       when: virtualservice is defined
+
+
+    - name: Gather cluster uuid
+      avi_api_session:
+        avi_credentials: "{{ avi_credentials }}"
+        api_version: "{{ avi_credentials.api_version }}"
+        http_method: get
+        timeout: 300
+        path: cluster
+        tenant: "{{ tenant | default('admin') }}"
+      register: statusCluster
+
+    - name: Debug
+      debug:
+        msg: "{{ statusCluster.obj.uuid }}"
+      tags:
+        - debug

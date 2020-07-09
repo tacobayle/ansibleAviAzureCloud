@@ -139,11 +139,12 @@ virtualservice:
 
 ## Use the ansible playbook to:
 1. Configure Avi System Parameters
-2. Configure SE Default SE Group
+2. Configure SE Default SE Group and GSLB SE group
 3. Configure Azure Cloud
 4. Configure Health Monitoring
 5. Configure pool
-6. Configure Virtual Service
+6. Configure Virtual Service (http and dns for GSLB)
+7. Display cluster uuid
 
 ## Run the playbook:
 ansible-playbook main.yml
